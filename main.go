@@ -18,7 +18,7 @@ func main() {
 	}
 
 	router := mux.NewRouter()
-	appBase := "/igcinfo"
+	//appBase := "/igcinfo"
 
 	http.Handle("/", router)
 
