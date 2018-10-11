@@ -15,8 +15,8 @@ func main() {
 	root := "/igcinfo"
 
 	http.HandleFunc(root+"/api", apiHandler)
-	http.HandleFunc(root+"/api/igc", getigcHandler)
-	http.HandleFunc(root+"/api/igc", postigcHandler)
+	http.HandleFunc(root+"/api/igcget", getigcHandler)
+	http.HandleFunc(root+"/api/igcpost", postigcHandler)
 
 	appengine.Main()
 }
