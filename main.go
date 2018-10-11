@@ -37,6 +37,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 	i, _ := json.Marshal(info)
 
 	fmt.Println(string(i))
+	fmt.Fprint(w, string(i))
 
 }
 
