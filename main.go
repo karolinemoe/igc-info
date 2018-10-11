@@ -3,7 +3,8 @@
 package main
 
 import (
-    "fmt"
+	"encoding/json"
+	"fmt"
 	//"time"
 	"net/http"
     "google.golang.org/appengine"
@@ -23,6 +24,20 @@ func main() {
 func apiHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "API RESPONSE")
 
+	type Info struct {
+		Info string `json:"info"`
+		Version string `json:"version"`
+	}
+
+	info := &Info{
+		Info: "IGC Info API",
+		Version: "v1",
+	}
+
+	i, _ := json.Marshal(info)
+
+	fmt.Println(string(i))
+
 }
 
 func igcHandler(w http.ResponseWriter, r *http.Request) {
@@ -35,7 +50,5 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 	default:
 		fmt.Fprint(w, "Error message")
 	}
-
-	fmt.Fprint(w, "Get IGC RESPONSE")
 }
 
