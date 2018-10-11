@@ -4,33 +4,24 @@ package main
 
 import (
     "fmt"
-	"log"
 	"net/http"
     "google.golang.org/appengine"
-	//"github.com/marni/goigc"
-	"github.com/gorilla/mux"
-	"os"
-)
+
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		log.Fatal("$PORT must be set")
-	}
 
-	router := mux.NewRouter()
-	//appBase := "/igcinfo"
+	http.HandleFunc("/", homeHandler)
 
-	http.Handle("/", router)
-
-	log.Fatal(http.ListenAndServe(":"+port, router))
-
-
-
-	http.HandleFunc("/", handle)
-        appengine.Main()
+	appengine.Main()
 
 }
-func handle(w http.ResponseWriter, r *http.Request) {
-        fmt.Fprintln(w, "Hello, Application!")
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+	errorHandler(w, r, http.StatusNotFound)
 
+}
+
+func errorHandler(w http.ResponseWriter, r *http.Request, status int) {
+	w.WriteHeader(status)
+	if status == http.StatusNotFound {
+		fmt.Fprint(w, "404")
+	}
 }
