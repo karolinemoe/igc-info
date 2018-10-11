@@ -22,7 +22,7 @@ func main() {
 }
 
 func apiHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "API RESPONSE")
+	//fmt.Fprint(w, "API RESPONSE")
 
 	type Info struct {
 		Info string `json:"info"`
