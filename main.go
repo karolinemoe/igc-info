@@ -17,14 +17,11 @@ func main() {
 	router := mux.NewRouter()
 
 	//http.HandleFunc(root, homeHandler)
-	router.HandleFunc(root + "/api", apiHandler).Methods("GET")
+	router.HandleFunc(root + "/api", apiHandler)
 
 	appengine.Main()
 
 }
-/*func homeHandler(w http.ResponseWriter, r *http.Request) {
-	errorHandler(w, r, http.StatusNotFound)
-}*/
 
 func apiHandler(w http.ResponseWriter, r *http.Request){
 	// API info object schema
@@ -48,9 +45,3 @@ func apiHandler(w http.ResponseWriter, r *http.Request){
 	fmt.Fprint(w, "API RESPONS")
 }
 
-/*func errorHandler(w http.ResponseWriter, r *http.Request, status int) {
-	w.WriteHeader(status)
-	if status == http.StatusNotFound {
-		fmt.Fprint(w, "404 page not found")
-	}
-}*/
