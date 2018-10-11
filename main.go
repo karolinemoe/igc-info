@@ -7,15 +7,15 @@ import (
 	//"time"
 	"net/http"
     "google.golang.org/appengine"
-	"github.com/gorilla/mux"
+	//"github.com/gorilla/mux"
 )
 
 func main() {
 
 	root := "/igcinfo"
-	router := mux.NewRouter()
+	//router := mux.NewRouter()
 
-	router.HandleFunc(root+"/api", apiHandler)
+	http.HandleFunc(root+"/api", apiHandler)
 
 	appengine.Main()
 
