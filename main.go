@@ -27,7 +27,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 	//fmt.Fprint(w, "API RESPONSE")
 
 	type Info struct {
-		Uptime string `json:"time"`
+		Uptime string `json:"uptime"`
 		Info string `json:"info"`
 		Version string `json:"version"`
 	}
@@ -38,9 +38,9 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 		Version: "v1",
 	}
 
-	i, _ := json.Marshal(info)
+	i, _ := json.MarshalIndent(info, "", " ")
 
-	fmt.Println(string(i))
+	//fmt.Println(string(i))
 	fmt.Fprint(w, string(i))
 
 }
