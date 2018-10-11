@@ -3,26 +3,13 @@
 // license that can be found in the LICENSE file.
 package main
 import (
-        "fmt"
-	"log"
+    "fmt"
 	"net/http"
-        "google.golang.org/appengine"
 )
 func main() {
         http.HandleFunc("/", handle)
-        appengine.Main()
 }
 func handle(w http.ResponseWriter, r *http.Request) {
         fmt.Fprintln(w, "Hello, Application!")
 
-		res.WriteHeader(500)
-		res.Write([]byte("Boom!"))
-
-		go http.ListenAndServe(":9000", nil)
-
-		res, err := http.Get("http://127.0.0.1:9000/boom")
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Printf("res.StatusCode: %d\n", res.StatusCode)
 }
