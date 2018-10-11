@@ -13,16 +13,22 @@ import (
 func main() {
 
 	root := "/igcinfo"
-	//router := mux.NewRouter()
 
 	http.HandleFunc(root+"/api", apiHandler)
+	http.HandleFunc(root+"/api/igc", getigcHandler)
+	http.HandleFunc(root+"/api/igc", postigcHandler)
 
 	appengine.Main()
-
 }
 
 func apiHandler(w http.ResponseWriter, r *http.Request) {
-
-	fmt.Fprint(w, "API RESPONS")
+	fmt.Fprint(w, "API RESPONSE")
 }
 
+func getigcHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "Get IGC RESPONSE")
+}
+
+func postigcHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "Post IGC RESPONSE")
+}
