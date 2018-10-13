@@ -135,6 +135,8 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 
 				// add track to memory if it doesn't exist
 				if !trackExist(trackID) {
+					fmt.Fprint(w, "HELLOOOO")
+
 					trackMetaData := IGCTrack{
 						HDate:       igcData.Date,
 						Pilot:       igcData.Pilot,
