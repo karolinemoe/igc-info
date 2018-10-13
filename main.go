@@ -105,7 +105,17 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 		var newIgc struct { URL string }
 		fmt.Fprint(w, r.Body)
 		fmt.Fprint(w, "       LINKFORHER      ")
+
+
+		body := make(map[string]interface{})
+		_ = json.NewDecoder(r.Body).Decode(&body)
+
+
+		newIgc.URL = body["url"].(string)
+		fmt.Fprint(w, newIgc)
 		err := json.NewDecoder(r.Body).Decode(&newIgc)
+
+
 
 		if err != nil {
 			http.Error(w, err.Error(), 400)
