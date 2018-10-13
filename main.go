@@ -103,8 +103,8 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 
 		var newIgc struct { URL string }
-		fmt.Fprint(w, newIgc)
-		fmt.Fprint(w, "LINKFORHER")
+		fmt.Fprint(w, r.Body)
+		fmt.Fprint(w, "       LINKFORHER      ")
 		err := json.NewDecoder(r.Body).Decode(&newIgc)
 
 		if err != nil {
