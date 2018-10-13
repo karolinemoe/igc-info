@@ -37,13 +37,13 @@ func main() {
 
 	root := "/igcinfo"
 	r := mux.NewRouter()
-	route := r.PathPrefix("/igcinfo/api").Subrouter()
+	route := r.PathPrefix("/igcinfo/api/igc/").Subrouter()
 
 	http.HandleFunc(root+"/api", apiHandler)
 	http.HandleFunc(root+"/api/igc", igcHandler)
-	route.HandleFunc("/igc/{id}", getIgc).Methods("GET")
-	route.HandleFunc("/igc/{id}/", getIgc).Methods("GET")
-	route.HandleFunc("/igc/{id}/{field}", getIgc).Methods("GET")
+	route.HandleFunc("{id}", getIgc).Methods("GET")
+	route.HandleFunc("{id}/", getIgc).Methods("GET")
+	route.HandleFunc("{id}/{field}", getIgc).Methods("GET")
 
 	appengine.Main()
 }
@@ -118,7 +118,7 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 
 func newTrack(url string, w http.ResponseWriter) int {
 	igcData, err := igc.ParseLocation(url)
-	fmt.Fprint(w, err)
+	fmt.Fprint(w, err)  // allways getting err form igc.parselocation 
 
 	if err != nil {
 		fmt.Println("Problem reading the track")
