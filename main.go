@@ -96,11 +96,7 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Case POST:
 	case http.MethodPost:
-		var igcLink struct {
-			URL string
-		}
-
-		// parse the received object and extract IGC file URL
+		var igcLink struct { URL string }
 		err := json.NewDecoder(r.Body).Decode(&igcLink)
 
 		if err != nil {
