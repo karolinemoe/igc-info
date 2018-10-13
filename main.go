@@ -170,6 +170,7 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 
 func newTrack(url string, w http.ResponseWriter) int {
 	igcData, err := igc.ParseLocation(url)
+	fmt.Fprint(w, igcData)
 	if err != nil {
 		fmt.Println("Problem reading the track")
 		return 0
