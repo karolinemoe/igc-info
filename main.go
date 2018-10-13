@@ -44,7 +44,6 @@ func main() {
 }
 
 func apiHandler(w http.ResponseWriter, r *http.Request) {
-	//fmt.Fprint(w, "API RESPONSE")
 
 	type Info struct {
 		Uptime string `json:"uptime"`
@@ -61,11 +60,11 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 	i, _ := json.MarshalIndent(info, "", " ")
 
 	fmt.Fprint(w, string(i))
-
 }
 
 // calculates time since boot un UNIX time and converts it into a Time object, afterwards converst it to a final string with all components
 func uptime() string{
+
 	uptime := time.Now().Unix() - startTime.Unix()
 	ut := time.Unix(uptime, 0)
 
@@ -78,6 +77,7 @@ func uptime() string{
 
 // absolute value of n
 func absInt(n int64) int64 {
+
 	if n < 0 {
 		return -n
 	}
@@ -115,6 +115,7 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 		igcData, err := igc.ParseLocation(igcLink.URL)
 
 		if err != nil {
+			fmt.Fprint(w, err)
 			http.Error(w, "Problem reading the track", 400)
 			return
 		}
@@ -165,6 +166,7 @@ func findTrackWithID(ID uint64) (IGCTrack, error) {
 
 // check if track already exists in the memory
 func trackExist(trackID uint64) bool {
+
 	_, err := findTrackWithID(trackID)
 	return err == nil
 }
@@ -172,6 +174,7 @@ func trackExist(trackID uint64) bool {
 
 // calculate the total lenth of a track based on its waypoints
 func calcTrackLength(points []igc.Point) float64 {
+
 	var tl float64
 	for i := 0; i < len(points)-1; i++ {
 		tl += points[i].Distance(points[i+1])
