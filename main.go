@@ -5,6 +5,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"strconv"
 	"errors"
 	"time"
@@ -96,13 +97,10 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Case POST:
 	case http.MethodPost:
-		var igcLink struct { URL string }
+		/*var igcLink struct { URL string }
 		err := json.NewDecoder(r.Body).Decode(&igcLink)
 
-		if err != nil {
-			http.Error(w, err.Error(), 400)
-			return
-		}
+
 		if igcLink.URL == "" {
 			http.Error(w, "Request missing the URL", 400)
 			return
@@ -114,7 +112,31 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprint(w, err)
 			http.Error(w, "Problem reading the track", 400)
 			return
+		}*/
+
+		body, err := ioutil.ReadAll(r.Body)
+
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
 		}
+
+		var payload map[string] interface{}
+		json.Unmarshal(body, &payload)
+
+		if payload["url"] == "" {
+			http.Error(w, "Request missing the URL", 400)
+			return
+		}
+
+		igcData, err := igc.ParseLocation(payload["url"].(string))
+
+		if err != nil {
+			fmt.Fprint(w, err)
+			http.Error(w, "Problem reading the track", 400)
+			return
+		}
+
 
 		trackID, err := hashstructure.Hash(igcData, nil)
 		if err != nil {
