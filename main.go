@@ -4,18 +4,16 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
-	"strconv"
-	"errors"
-	"time"
 	"net/http"
+	"strconv"
+	"time"
 
-    "google.golang.org/appengine"
+	"github.com/gorilla/mux"
 	"github.com/marni/goigc"
-	"github.com/mitchellh/hashstructure"
-
-
+	"google.golang.org/appengine"
 )
 
 // IGCTrack struct for the track data
@@ -24,7 +22,7 @@ type IGCTrack struct {
 	Pilot       string    `json:"pilot"`
 	Glider      string    `json:"glider"`
 	GliderID    string    `json:"glider_id"`
-	ID          uint64    `json:"-"`
+	ID          string    `json:"track_id"`
 	TrackLength float64   `json:"track_length"`
 	Data        igc.Track `json:"-"`
 }
@@ -33,13 +31,20 @@ type IGCTrack struct {
 var startTime = time.Now()
 var igcTracks []IGCTrack
 
+var currentID = 0
+
 
 func main() {
 
 	root := "/igcinfo"
+	r := mux.NewRouter()
+	route := r.PathPrefix("/igcinfo/api").Subrouter()
 
 	http.HandleFunc(root+"/api", apiHandler)
 	http.HandleFunc(root+"/api/igc", igcHandler)
+	route.HandleFunc("/igc/{id}", getIgc).Methods("GET")
+	route.HandleFunc("/igc/{id}/", getIgc).Methods("GET")
+	route.HandleFunc("/igc/{id}/{field}", getIgc).Methods("GET")
 
 	appengine.Main()
 }
@@ -91,28 +96,12 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 	// Case GET:
 	case http.MethodGet:
 		ids := []string{}
-		for _, track := range igcTracks { ids = append(ids, strconv.Itoa(int(track.ID))) }
+		for _, track := range igcTracks { ids = append(ids, track.ID) }
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(ids)
 
 	// Case POST:
 	case http.MethodPost:
-		/*var igcLink struct { URL string }
-		err := json.NewDecoder(r.Body).Decode(&igcLink)
-
-
-		if igcLink.URL == "" {
-			http.Error(w, "Request missing the URL", 400)
-			return
-		}
-
-		igcData, err := igc.ParseLocation(igcLink.URL)
-
-		if err != nil {
-			fmt.Fprint(w, err)
-			http.Error(w, "Problem reading the track", 400)
-			return
-		}*/
 
 		body, err := ioutil.ReadAll(r.Body)
 
@@ -133,13 +122,7 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 			if err == nil {
 				fmt.Fprint(w, "HELLOOOO123123123123")
 
-				trackID, err := hashstructure.Hash(igcData, nil)
-
-				fmt.Fprint(w, "HELLOOOO123123123123adsafsfafsda")
-
-				if err != nil {
-					http.Error(w, "Problem generating checksum", 400)
-				}
+				trackID := strconv.Itoa(currentID+1)
 
 				// add track to memory if it doesn't exist
 				if !trackExist(trackID) {
@@ -160,8 +143,7 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 					ID string `json:"id"`
 				}
 
-				trackIDStr := strconv.FormatUint(trackID, 10)
-				json.NewEncoder(w).Encode(IGCid{ID: trackIDStr})
+				json.NewEncoder(w).Encode(IGCid{ID: trackID})
 				fmt.Fprint(w, "POST")
 			}
 
@@ -169,25 +151,56 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Request missing the URL", 400)
 			return
 		}
-
-		//igcData, err := igc.ParseLocation(payload["url"].(string))
-
+		
 		if err != nil {
 			fmt.Fprint(w, err)
 			http.Error(w, "Problem reading the track", 400)
 			return
 		}
 
-
-
-
 		default:
 		fmt.Fprint(w, "Error message")
 	}
 }
 
+func getIgc(w http.ResponseWriter, r *http.Request) {
+
+	// extract query parameters
+	params := mux.Vars(r)
+
+	// look for track
+	track, err := findTrackWithID(params["id"])
+	if err != nil {
+		http.Error(w, "No Content", 204); return
+	}
+
+	// if no field entered return the whole element
+	_, ok :=  params["field"]
+	if !ok {
+		w.Header().Set("Content-Type", "application/jsons")
+		json.NewEncoder(w).Encode(track); return
+	}
+
+	// use a map to match query with track metadata field
+	trackMetaDataMap := map[string]interface{}{
+		"pilot":        track.Pilot,
+		"glider":       track.Glider,
+		"glider_id":    track.GliderID,
+		"track_length": track.TrackLength,
+		"H_date":       track.HDate.String(),
+	}
+
+	if trackMetaDataMap[params["field"]] == nil {
+		http.Error(w, "No proper field specified", 400); return
+	}
+
+	w.Header().Set("Content-Type", "application/text")
+	// fmt.Fprint(w, trackMetaDataMap[params["field"]])
+	json.NewEncoder(w).Encode(trackMetaDataMap[params["field"]])
+}
+
 // search through the tracks for specific ID and return that, else return an error
-func findTrackWithID(ID uint64) (IGCTrack, error) {
+func findTrackWithID(ID string) (IGCTrack, error) {
 
 	var t IGCTrack
 	for i := 0; i < len(igcTracks); i++ {
@@ -199,7 +212,7 @@ func findTrackWithID(ID uint64) (IGCTrack, error) {
 }
 
 // check if track already exists in the memory
-func trackExist(trackID uint64) bool {
+func trackExist(trackID string) bool {
 
 	_, err := findTrackWithID(trackID)
 	return err == nil
@@ -215,4 +228,3 @@ func calcTrackLength(points []igc.Point) float64 {
 	}
 	return tl
 }
-
