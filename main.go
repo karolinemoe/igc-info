@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
@@ -103,60 +102,66 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 	// Case POST:
 	case http.MethodPost:
 
-		body, err := ioutil.ReadAll(r.Body)
+		//body, err := ioutil.ReadAll(r.Body)
+
+		var newIgc struct { URL string }
+		err := json.NewDecoder(r.Body).Decode(&newIgc)
 
 		if err != nil {
 			http.Error(w, err.Error(), 400)
 			return
 		}
-
-		var payload map[string] interface{
-		}
-
-		json.Unmarshal(body, &payload)
-
-		if value, exists := payload["url"]; exists {
-			igcData, err := igc. ParseLocation(value.(string))
-			fmt.Fprint(w, err)
-
-			if err == nil {
-				fmt.Fprint(w, "HELLOOOO123123123123")
-
-				trackID := strconv.Itoa(currentID+1)
-
-				// add track to memory if it doesn't exist
-				if !trackExist(trackID) {
-
-					trackMetaData := IGCTrack{
-						HDate:       igcData.Date,
-						Pilot:       igcData.Pilot,
-						Glider:      igcData.GliderType,
-						GliderID:    igcData.GliderID,
-						TrackLength: calcTrackLength(igcData.Points),
-						ID:          trackID,
-						Data:        igcData,
-					}
-					igcTracks = append(igcTracks, trackMetaData)
-				}
-
-				type IGCid struct {
-					ID string `json:"id"`
-				}
-
-				json.NewEncoder(w).Encode(IGCid{ID: trackID})
-				fmt.Fprint(w, "POST")
-			}
-
-		} else {
-			http.Error(w, "Request missing the URL", 400)
+		if newIgc.URL == "" {
+			http.Error(w, "Request does not have 'URL' property", 400)
 			return
 		}
-		
+		igcData, err := igc.ParseLocation(newIgc.URL)
+
 		if err != nil {
-			fmt.Fprint(w, err)
 			http.Error(w, "Problem reading the track", 400)
 			return
 		}
+
+		//var payload map[string] interface{}
+
+		//json.Unmarshal(body, &payload)
+
+		//if value, exists := payload["url"]; exists {
+			//igcData, err := igc. ParseLocation(value.(string))
+		fmt.Fprint(w, "TESTT")
+
+		if err == nil {
+			fmt.Fprint(w, "HELLOOOO123123123123")
+
+			trackID := strconv.Itoa(currentID+1)
+
+			// add track to memory if it doesn't exist
+			if !trackExist(trackID) {
+
+				trackMetaData := IGCTrack{
+					HDate:       igcData.Date,
+					Pilot:       igcData.Pilot,
+					Glider:      igcData.GliderType,
+					GliderID:    igcData.GliderID,
+					TrackLength: calcTrackLength(igcData.Points),
+					ID:          trackID,
+					Data:        igcData,
+				}
+				igcTracks = append(igcTracks, trackMetaData)
+			}
+
+			type IGCid struct {
+				ID string `json:"id"`
+			}
+
+			json.NewEncoder(w).Encode(IGCid{ID: trackID})
+			fmt.Fprint(w, "POST")
+		}
+
+		/*} else {
+			http.Error(w, "Request missing the URL", 400)
+			return
+		}*/
 
 		default:
 		fmt.Fprint(w, "Error message")
