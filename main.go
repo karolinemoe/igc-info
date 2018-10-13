@@ -102,10 +102,6 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 	// Case POST:
 	case http.MethodPost:
 
-		/*var newIgc struct { URL string }
-		fmt.Fprint(w, r.Body)
-		fmt.Fprint(w, "       LINKFORHER      ")*/
-
 		body := make(map[string]interface{})
 		_ = json.NewDecoder(r.Body).Decode(&body)
 
@@ -115,54 +111,6 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-
-
-		/*if err != nil {
-			http.Error(w, err.Error(), 400)
-			return
-		}
-		if newIgc.URL == "" {
-			http.Error(w, "Request does not have 'URL' property", 400)
-			return
-		}
-
-		igcData, err := igc.ParseLocation(newIgc.URL)
-
-		if err != nil {
-			http.Error(w, "Problem reading the track", 400)
-			return
-		}
-
-		fmt.Fprint(w, "TESTT")
-
-		if err == nil {
-			fmt.Fprint(w, "HELLOOOO123123123123")
-
-			trackID := strconv.Itoa(currentID+1)
-
-			// add track to memory if it doesn't exist
-			if !trackExist(trackID) {
-
-				trackMetaData := IGCTrack{
-					HDate:       igcData.Date,
-					Pilot:       igcData.Pilot,
-					Glider:      igcData.GliderType,
-					GliderID:    igcData.GliderID,
-					TrackLength: calcTrackLength(igcData.Points),
-					ID:          trackID,
-					Data:        igcData,
-				}
-				igcTracks = append(igcTracks, trackMetaData)
-			}
-
-			type IGCid struct {
-				ID string `json:"id"`
-			}
-
-			json.NewEncoder(w).Encode(IGCid{ID: trackID})
-			fmt.Fprint(w, "POST")
-		}*/
-
 		default:
 		fmt.Fprint(w, "Error message")
 	}
@@ -170,7 +118,8 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 
 func newTrack(url string, w http.ResponseWriter) int {
 	igcData, err := igc.ParseLocation(url)
-	fmt.Fprint(w, igcData.Pilot)
+	fmt.Fprint(w, err)
+
 	if err != nil {
 		fmt.Println("Problem reading the track")
 		return 0
@@ -246,7 +195,7 @@ func findTrackWithID(ID string) (IGCTrack, error) {
 			return igcTracks[i], nil
 		}
 	}
-	return t, errors.New("Track not found")
+	return t, errors.New("track not found")
 }
 
 // check if track already exists in the memory
