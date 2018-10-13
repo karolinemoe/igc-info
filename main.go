@@ -126,16 +126,21 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 
 		if value, exists := payload["url"]; exists {
 			igcData, err := igc. ParseLocation(value.(string))
+			fmt.Fprint(w, "HELLOOOO")
 
 			if err == nil {
+				fmt.Fprint(w, "HELLOOOO123123123123")
+
 				trackID, err := hashstructure.Hash(igcData, nil)
+
+				fmt.Fprint(w, "HELLOOOO123123123123adsafsfafsda")
+
 				if err != nil {
 					http.Error(w, "Problem generating checksum", 400)
 				}
 
 				// add track to memory if it doesn't exist
 				if !trackExist(trackID) {
-					fmt.Fprint(w, "HELLOOOO")
 
 					trackMetaData := IGCTrack{
 						HDate:       igcData.Date,
