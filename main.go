@@ -102,9 +102,9 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 	// Case POST:
 	case http.MethodPost:
 
-		//body, err := ioutil.ReadAll(r.Body)
-
 		var newIgc struct { URL string }
+		fmt.Fprint(w, newIgc)
+		fmt.Fprint(w, "LINKFORHER")
 		err := json.NewDecoder(r.Body).Decode(&newIgc)
 
 		if err != nil {
@@ -115,6 +115,7 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Request does not have 'URL' property", 400)
 			return
 		}
+
 		igcData, err := igc.ParseLocation(newIgc.URL)
 
 		if err != nil {
@@ -122,12 +123,6 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		//var payload map[string] interface{}
-
-		//json.Unmarshal(body, &payload)
-
-		//if value, exists := payload["url"]; exists {
-			//igcData, err := igc. ParseLocation(value.(string))
 		fmt.Fprint(w, "TESTT")
 
 		if err == nil {
@@ -157,11 +152,6 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 			json.NewEncoder(w).Encode(IGCid{ID: trackID})
 			fmt.Fprint(w, "POST")
 		}
-
-		/*} else {
-			http.Error(w, "Request missing the URL", 400)
-			return
-		}*/
 
 		default:
 		fmt.Fprint(w, "Error message")
