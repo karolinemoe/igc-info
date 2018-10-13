@@ -124,12 +124,44 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 		var payload map[string] interface{}
 		json.Unmarshal(body, &payload)
 
-		if payload["url"] == "" {
+		if value, exists := payload["url"]; exists {
+			igcData, err := igc. ParseLocation(value.(string))
+
+			if err == nil {
+				trackID, err := hashstructure.Hash(igcData, nil)
+				if err != nil {
+					http.Error(w, "Problem generating checksum", 400)
+				}
+
+				// add track to memory if it doesn't exist
+				if !trackExist(trackID) {
+					trackMetaData := IGCTrack{
+						HDate:       igcData.Date,
+						Pilot:       igcData.Pilot,
+						Glider:      igcData.GliderType,
+						GliderID:    igcData.GliderID,
+						TrackLength: calcTrackLength(igcData.Points),
+						ID:          trackID,
+						Data:        igcData,
+					}
+					igcTracks = append(igcTracks, trackMetaData)
+				}
+
+				type IGCid struct {
+					ID string `json:"id"`
+				}
+
+				trackIDStr := strconv.FormatUint(trackID, 10)
+				json.NewEncoder(w).Encode(IGCid{ID: trackIDStr})
+				fmt.Fprint(w, "POST")
+			}
+
+		} else {
 			http.Error(w, "Request missing the URL", 400)
 			return
 		}
 
-		igcData, err := igc.ParseLocation(payload["url"].(string))
+		//igcData, err := igc.ParseLocation(payload["url"].(string))
 
 		if err != nil {
 			fmt.Fprint(w, err)
@@ -138,32 +170,7 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 
-		trackID, err := hashstructure.Hash(igcData, nil)
-		if err != nil {
-			http.Error(w, "Problem generating checksum", 400)
-		}
 
-		// add track to memory if it doesn't exist
-		if !trackExist(trackID) {
-			trackMetaData := IGCTrack{
-				HDate:       igcData.Date,
-				Pilot:       igcData.Pilot,
-				Glider:      igcData.GliderType,
-				GliderID:    igcData.GliderID,
-				TrackLength: calcTrackLength(igcData.Points),
-				ID:          trackID,
-				Data:        igcData,
-			}
-			igcTracks = append(igcTracks, trackMetaData)
-		}
-
-		type IGCid struct {
-			ID string `json:"id"`
-		}
-
-		trackIDStr := strconv.FormatUint(trackID, 10)
-		json.NewEncoder(w).Encode(IGCid{ID: trackIDStr})
-		fmt.Fprint(w, "POST")
 
 		default:
 		fmt.Fprint(w, "Error message")
