@@ -121,12 +121,14 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		var payload map[string] interface{}
+		var payload map[string] interface{
+		}
+
 		json.Unmarshal(body, &payload)
 
 		if value, exists := payload["url"]; exists {
 			igcData, err := igc. ParseLocation(value.(string))
-			fmt.Fprint(w, "HELLOOOO")
+			fmt.Fprint(w, err)
 
 			if err == nil {
 				fmt.Fprint(w, "HELLOOOO123123123123")
