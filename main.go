@@ -133,6 +133,7 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 func newTrack(url string, w http.ResponseWriter) int {
 	fmt.Fprint(w, url + "       ")
 	igcData, err := igc.ParseLocation(url)
+	fmt.Fprint(w, igcData.Pilot + " <- Pilot!")
 	fmt.Fprint(w, err)  // allways getting err form igc.parselocation
 
 	if err != nil {
