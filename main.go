@@ -102,10 +102,24 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 	// Case POST:
 	case http.MethodPost:
 
-		body := make(map[string]interface{})
-		_ = json.NewDecoder(r.Body).Decode(&body)
+		var body struct { URL string }
 
-		newID := newTrack(body["url"].(string), w)
+		err := json.NewDecoder(r.Body).Decode(&body)
+
+		if err != nil {
+			http.Error(w, err.Error(), 400); return
+		}
+
+		// if object has no 'URL' property attached, reject furter processing
+		if body.URL == "" {
+			http.Error(w, "Request does not have 'URL' property", 400); return
+		}
+
+
+		/*body = make(map[string]interface{})
+		_ = json.NewDecoder(r.Body).Decode(&body)*/
+
+		newID := newTrack(body.URL, w)
 		if newID == 0 {
 			http.Error(w, "Not able to process the URL", http.StatusBadRequest)
 			return
@@ -118,7 +132,7 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 
 func newTrack(url string, w http.ResponseWriter) int {
 	igcData, err := igc.ParseLocation(url)
-	fmt.Fprint(w, err)  // allways getting err form igc.parselocation 
+	fmt.Fprint(w, err)  // allways getting err form igc.parselocation
 
 	if err != nil {
 		fmt.Println("Problem reading the track")
