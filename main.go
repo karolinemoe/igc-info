@@ -132,7 +132,7 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 
 func newTrack(url string, w http.ResponseWriter) int {
 	fmt.Fprint(w, url + "       ")
-	igcData, err := igc.ParseLocation(url)
+	igcData, err := igc.ParseLocation("http://skypolaris.org/wp-content/uploads/IGS%20Files/Medellin%20Guatemala.igc")
 	fmt.Fprint(w, igcData.Pilot + " <- Pilot!")
 	fmt.Fprint(w, err)  // allways getting err form igc.parselocation
 
