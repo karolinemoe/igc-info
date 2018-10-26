@@ -134,9 +134,6 @@ func newTrack(url string, w http.ResponseWriter) int {
 	fmt.Fprint(w, url + "       ")
 	igcData, err := igc.ParseLocation(url)
 
-	fmt.Fprint(w, igcData.Pilot + " <- Pilot!") // nothing, whyy?:(
-	fmt.Fprint(w, err)  // allways getting err form igc.parselocation
-
 	if err != nil {
 		fmt.Println("Problem reading the track")
 		return 0
