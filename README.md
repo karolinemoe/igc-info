@@ -25,7 +25,7 @@ The app is deployed on Google App Engine: https://igc-info-473190.appspot.com/
 
 ## Testing
 
-...
+Currently getting err on igc.parseLocation("-- THE IGC URL --"), and cannot resolve this issue, therefor not possible to test results from the api. I hope the review on this assignment can be done on the code itself, and maybe get a follow-up on where my error lies, to correct the issue.  
 
 ## API Requirements
 
