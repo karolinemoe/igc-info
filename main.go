@@ -140,6 +140,7 @@ func newTrack(url string, w http.ResponseWriter) string {
 	}
 
 	trackID := strconv.Itoa(currentID+1)
+	currentID = currentID+1
 
 	// add track to memory if it doesn't exist
 	if !trackExist(trackID) {
