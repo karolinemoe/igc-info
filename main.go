@@ -46,6 +46,9 @@ func main() {
 	route.HandleFunc("igc/{id}/", getIgc).Methods("GET")
 	route.HandleFunc("igc/{id}/{field}", getIgc).Methods("GET")
 
+	http.Handle("/", r)
+	
+
 	appengine.Main()
 }
 
