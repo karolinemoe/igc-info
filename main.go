@@ -120,7 +120,7 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 		_ = json.NewDecoder(r.Body).Decode(&body)*/
 
 		newID := newTrack(body.URL, w)
-		if newID != NULL {
+		if newID == "" {
 			http.Error(w, "Not able to process the URL", http.StatusBadRequest)
 			return
 		}
@@ -136,7 +136,7 @@ func newTrack(url string, w http.ResponseWriter) string {
 
 	if err != nil {
 		fmt.Println("Problem reading the track")
-		return 0
+		return ""
 	}
 
 	trackID := strconv.Itoa(currentID+1)
