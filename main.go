@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/mitchellh/hashstructure"
 	"net/http"
 	"strconv"
 	"time"
@@ -30,7 +31,7 @@ type IGCTrack struct {
 var startTime = time.Now()
 var igcTracks []IGCTrack
 
-var currentID = 0
+//var currentID = 0
 
 
 func main() {
@@ -139,8 +140,14 @@ func newTrack(url string, w http.ResponseWriter) string {
 		return ""
 	}
 
-	trackID := strconv.Itoa(currentID+1)
-	currentID = currentID+1
+	checksum, err := hashstructure.Hash(igcData, nil)
+	if err != nil {
+		http.Error(w, "Problem generating checksum", 400)
+	}
+	trackID := strconv.Itoa(int(checksum))
+
+	//trackID := strconv.Itoa(currentID+1)
+	//currentID = currentID+1
 
 	// add track to memory if it doesn't exist
 	if !trackExist(trackID) {
