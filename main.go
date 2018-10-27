@@ -120,7 +120,7 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 		_ = json.NewDecoder(r.Body).Decode(&body)*/
 
 		newID := newTrack(body.URL, w)
-		if newID == 0 {
+		if newID != NULL {
 			http.Error(w, "Not able to process the URL", http.StatusBadRequest)
 			return
 		}
