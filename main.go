@@ -38,13 +38,13 @@ func main() {
 
 	root := "/igcinfo"
 	r := mux.NewRouter()
-	route := r.PathPrefix("/igcinfo/api/igc/").Subrouter()
+	route := r.PathPrefix("/igcinfo/api/").Subrouter()
 
 	http.HandleFunc(root+"/api", apiHandler)
 	http.HandleFunc(root+"/api/igc", igcHandler)
-	route.HandleFunc("{id}", getIgc).Methods("GET")
-	route.HandleFunc("{id}/", getIgc).Methods("GET")
-	route.HandleFunc("{id}/{field}", getIgc).Methods("GET")
+	route.HandleFunc("igc/{id}", getIgc).Methods("GET")
+	route.HandleFunc("igc/{id}/", getIgc).Methods("GET")
+	route.HandleFunc("igc/{id}/{field}", getIgc).Methods("GET")
 
 	appengine.Main()
 }
