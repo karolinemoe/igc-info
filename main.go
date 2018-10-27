@@ -130,7 +130,7 @@ func igcHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func newTrack(url string, w http.ResponseWriter) int {
+func newTrack(url string, w http.ResponseWriter) string {
 	fmt.Fprint(w, url + "       ")
 	igcData, err := igc.ParseLocation(url)
 
