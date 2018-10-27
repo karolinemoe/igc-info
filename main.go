@@ -161,7 +161,7 @@ func newTrack(url string, w http.ResponseWriter) int {
 	}
 
 	json.NewEncoder(w).Encode(IGCid{ID: trackID})
-	return currentID
+	return trackID
 }
 
 func getIgc(w http.ResponseWriter, r *http.Request) {
